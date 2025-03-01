@@ -13,7 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - run: |
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
           sudo apt-get update
           sudo apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs
           curl -O https://download.schedmd.com/slurm/slurm-$SLURM_VERSION.tar.bz2
@@ -25,7 +29,8 @@ jobs:
         env:
           SLURM_VERSION: ${{ inputs.slurmVersion }}
 
-      - uses: softprops/action-gh-release@v2
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{ inputs.slurmVersion }} bld-${{ github.run_id }}
           body: SLURM ${{ inputs.slurmVersion }} release
