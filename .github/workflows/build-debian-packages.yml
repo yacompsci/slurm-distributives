@@ -1,0 +1,31 @@
+name: Build Debian Pakcages
+
+on:
+  workflow_dispatch:
+    inputs:
+      slurmVersion:
+        description: Slurm distributive version
+        required: true
+        default: 24.11.2
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - run: |
+          apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs
+          curl -O https://download.schedmd.com/slurm/slurm-$SLURM_VERSION.tar.bz2
+          tar -xf slurm-$SLURM_VERSION.tar.bz2
+          cd slurm-$SLURM_VERSION
+          mk-build-deps -i debian/control -t 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends'
+          debuild -b -uc -us
+        shell: bash
+        env:
+          SLURM_VERSION: ${{ inputs.slurmVersion }}
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ inputs.slurmVersion }} bld-${{ github.run_id }}
+          body: SLURM ${{ inputs.slurmVersion }} release
+          files: slurm*.deb
