@@ -16,6 +16,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get Latest Tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+
       - name: Build
         run: |
           sudo apt-get update
@@ -35,3 +39,4 @@ jobs:
           name: ${{ inputs.slurmVersion }} bld-${{ github.run_id }}
           body: SLURM ${{ inputs.slurmVersion }} release
           files: slurm*.deb
+          tag_name: ${{ steps.get-latest-tag.outputs.tag }}
