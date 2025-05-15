@@ -39,20 +39,20 @@ jobs:
 
       - name: Build
         run: |
-          sudo wget -O /etc/apt/sources.list.d/mellanox_mlnx_ofed.list https://linux.mellanox.com/public/repo/mlnx_ofed/${OFED_VERSION}/ubuntu22.04/mellanox_mlnx_ofed.list
+          sudo wget -qO /etc/apt/sources.list.d/mellanox_mlnx_ofed.list https://linux.mellanox.com/public/repo/mlnx_ofed/${OFED_VERSION}/ubuntu22.04/mellanox_mlnx_ofed.list
           wget -qO - https://www.mellanox.com/downloads/ofed/RPM-GPG-KEY-Mellanox | sudo apt-key add -
           sudo apt-get update
           
           sudo apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs \
             openmpi=${OPENMPI_VERSION}-${OPENMPI_SUBVERSION} \
-            libnvidia-ml-dev munge libmunge-dev libpmix2 libpmix-dev libevent-dev
+            libtool libhwloc-dev libnvidia-ml-dev munge libmunge-dev libpmix2 libpmix-dev libevent-dev
           
           export PATH=$PATH:/usr/mpi/gcc/openmpi-${OPENMPI_VERSION}/bin
           
           curl -O https://download.schedmd.com/slurm/slurm-$SLURM_VERSION.tar.bz2
           tar -xf slurm-$SLURM_VERSION.tar.bz2
           cd slurm-$SLURM_VERSION
-          sed -i "s|--with-pmix\b|--with-nvml --with-pmix=/usr/lib/${ARCH}-linux-gnu/pmix2|" debian/rules
+          sed -i "s|--with-pmix\b|--with-nvml --with-munge --with-pmix=/usr/lib/${ARCH}-linux-gnu/pmix2|" debian/rules
           sudo mk-build-deps -i debian/control -t 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends'
           debuild -b -uc -us
         shell: bash
