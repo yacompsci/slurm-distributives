@@ -30,7 +30,7 @@ jobs:
       - name: Build
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs libnvidia-ml-dev libmunge-dev
+          sudo apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs libnvidia-ml-dev libmunge-dev libevent-dev
           
           curl -LO https://github.com/openpmix/openpmix/releases/download/v$PMIX_VERSION/pmix-$PMIX_VERSION.tar.bz2
           tar -xf pmix-$PMIX_VERSION.tar.bz2
