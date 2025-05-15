@@ -3,6 +3,11 @@ name: Build Debian Packages
 on:
   workflow_dispatch:
     inputs:
+      pmixVersion:
+        description: PMIX distributive version
+        required: true
+        default: 2.2.5
+        type: string
       slurmVersion:
         description: Slurm distributive version
         required: true
@@ -26,6 +31,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl lbzip2 build-essential fakeroot devscripts equivs libnvidia-ml-dev libmunge-dev
+          
+          curl -O https://github.com/openpmix/openpmix/releases/download/v$PMIX_VERSION/pmix-$PMIX_VERSION.tar.bz2
+          tar -xf pmix-$PMIX_VERSION.tar.bz2
+          cd pmix-$PMIX_VERSION
+          ./configure --prefix=/tmp/pmix
+          make -j$(nproc)
+          make install
+          cd ..
+          
           curl -O https://download.schedmd.com/slurm/slurm-$SLURM_VERSION.tar.bz2
           tar -xf slurm-$SLURM_VERSION.tar.bz2
           cd slurm-$SLURM_VERSION
@@ -35,6 +49,7 @@ jobs:
         shell: bash
         env:
           SLURM_VERSION: ${{ inputs.slurmVersion }}
+          PMIX_VERSION: ${{ inputs.pmixVersion }}
 
       - name: Release
         uses: softprops/action-gh-release@v2
