@@ -58,7 +58,7 @@ jobs:
         shell: bash
         env:
           SLURM_VERSION: ${{ inputs.slurmVersion }}
-          OFED_VERSON: ${{ inputs.ofedVersion }}
+          OFED_VERSION: ${{ inputs.ofedVersion }}
           OPENMPI_VERSION: ${{ inputs.openmpiVersion }}
           OPENMPI_SUBVERSION: ${{ inputs.openmpiSubVersion }}
 
